@@ -1,0 +1,25 @@
+
+var lmeScriptId = 'customscript_so_po_lme_scheduled';
+var lmeScriptDeployId = 'customdeploy_lme_scheduled_scripts_deplo';
+
+function lme_before_submit () {
+	
+	var oldRec = nlapiGetOldRecord();
+	
+	if (oldRec != null && oldRec != '') {
+	
+		var oldLMEPrice = oldRec.getFieldValue('custrecord_lme_amount').toFixed(3);
+		var newLMEPrice = nlapiGetFieldValue('custrecord_lme_amount').toFixed(3);
+	
+		if (oldLMEPrice != newLMEPrice) {
+			nlapiSetFieldValue('custrecord_lme_recalc_required', 'T'); 
+			nlapiSetFieldValue('custrecord_lme_last_modified_user', nlapiGetUser());
+			var status = nlapiScheduleScript(lmeScriptId, lmeScriptDeployId);
+			
+			nlapiLogExecution ('DEBUG', 'SS Status:'+status );
+			
+		}
+	
+	}
+	
+}
